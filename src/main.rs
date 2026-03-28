@@ -1,5 +1,10 @@
 const SIZE: usize = 10;
 
+enum ShipOrientation {
+    Horizontal,
+    Vertical,
+}
+
 fn main() {
     let mut player1 = Player {
         name: String::from("Joe"),
@@ -10,7 +15,7 @@ fn main() {
         board: [[0; SIZE]; SIZE],
     };
 
-    player1.place_ship(1, 1, 3);
+    player1.place_ship(1, 1, 3, ShipOrientation::Vertical);
     println!("Player {}, with board {:?}", player1.name, player1.board);
     println!("Player {}, with board {:?}", player2.name, player2.board);
 }
@@ -21,10 +26,20 @@ struct Player {
 }
 
 impl Player {
-    fn place_ship(&mut self, row: usize, col: usize, len: usize) {
-        let end_col = col + len;
-        for c in col..end_col {
-            self.board[row][c] = 1;
+    fn place_ship(&mut self, row: usize, col: usize, len: usize, orientation: ShipOrientation) {
+        match orientation {
+            ShipOrientation::Horizontal => {
+                let end_col = col + len;
+                for c in col..end_col {
+                    self.board[row][c] = 1;
+                }
+            }
+            ShipOrientation::Vertical => {
+                let end_row = col + len;
+                for r in row..end_row {
+                    self.board[r][col] = 1;
+                }
+            }
         }
     }
 }
