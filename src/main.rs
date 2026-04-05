@@ -1,6 +1,7 @@
 use ratatui::{
     DefaultTerminal, Frame,
-    prelude::{Color, Span, Style},
+    text::Line,
+    widgets::{Block, Borders},
 };
 fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
@@ -18,7 +19,8 @@ fn app(terminal: &mut DefaultTerminal) -> std::io::Result<()> {
 }
 
 fn render(frame: &mut Frame) {
-    let span = Span::styled("🟥🟥🟥🟥", Style::default().fg(Color::Red));
-
-    frame.render_widget(span, frame.area());
+    let b = Block::default()
+        .borders(Borders::ALL)
+        .title(Line::from("Tetris").centered());
+    frame.render_widget(b, frame.area());
 }
