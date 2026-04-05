@@ -55,6 +55,11 @@ impl App {
 
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        let placing_block_padding = Line::from("");
+        let upper = Line::from("      🟩").red();
+        let lower = Line::from("🟩🟩🟩🟩").red();
+
+        let mut placing = vec![placing_block_padding, upper, lower];
         let block = Block::default()
             .borders(Borders::ALL)
             .title(Line::from("Tetris").centered());
@@ -69,10 +74,14 @@ impl Widget for &App {
         vector_box.append(&mut horizontal_vector);
         vector_box.push(horizontal_border.clone());
 
-        let playing_box = Text::from(vector_box);
-        Paragraph::new(playing_box)
+        let mut game_vec: Vec<Line<'_>> = Vec::new();
+        game_vec.append(&mut placing);
+        game_vec.append(&mut vector_box);
+
+        let game_ui = Text::from(game_vec);
+        Paragraph::new(game_ui)
             .centered()
             .block(block)
-            .render(area, buf);
+            .render(area, buf)
     }
 }
