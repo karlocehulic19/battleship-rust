@@ -1,6 +1,7 @@
 use ratatui::{
     DefaultTerminal, Frame,
-    text::Line,
+    style::Stylize,
+    text::{Line, Text, ToLine},
     widgets::{Block, Borders},
 };
 fn main() -> color_eyre::Result<()> {
@@ -11,7 +12,7 @@ fn main() -> color_eyre::Result<()> {
 
 fn app(terminal: &mut DefaultTerminal) -> std::io::Result<()> {
     loop {
-        terminal.draw(render)?;
+        terminal.draw(render_playing_box)?;
         if crossterm::event::read()?.is_key_press() {
             break Ok(());
         }
@@ -23,4 +24,18 @@ fn render(frame: &mut Frame) {
         .borders(Borders::ALL)
         .title(Line::from("Tetris").centered());
     frame.render_widget(b, frame.area());
+}
+
+fn render_playing_box(frame: &mut Frame) {
+    let horizontal_border_block = Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩".white());
+    let vertical_border_block = Line::from("🟩                    🟩".white());
+    let mut vector_box: Vec<Line<'_>> = Vec::new();
+
+    let mut horizontal_vector = vec![vertical_border_block; 10];
+    vector_box.push(horizontal_border_block.clone());
+    vector_box.append(&mut horizontal_vector);
+    vector_box.push(horizontal_border_block.clone());
+
+    let playing_box = Text::from(vector_box);
+    frame.render_widget(playing_box.centered(), frame.area());
 }
