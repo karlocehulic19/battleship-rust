@@ -25,5 +25,8 @@ impl Board {
 
     pub fn place_block(&mut self) {
         self.blocks[3][3] = 1;
+        self.blocks[4][3] = 2;
+        self.blocks[5][5] = 3;
+        self.blocks[6][5] = 4;
     }
 }
