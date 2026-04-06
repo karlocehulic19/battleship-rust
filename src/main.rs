@@ -11,7 +11,7 @@ use ratatui::{
 };
 
 use crate::{
-    game::board::{self, Board},
+    game::board::Board,
     general::{colors::Color, dimensions::BOX_HEIGHT, types::ColorBox},
 };
 mod game;
