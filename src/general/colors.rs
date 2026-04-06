@@ -1,5 +1,6 @@
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, Default)]
 pub enum Color {
+    #[default]
     Empty,
     Green,
     Blue,

@@ -11,7 +11,7 @@ use ratatui::{
 };
 
 use crate::{
-    game::board,
+    game::board::{self, Board},
     general::{colors::Color, dimensions::BOX_HEIGHT, types::ColorBox},
 };
 mod game;
@@ -25,6 +25,7 @@ fn main() -> io::Result<()> {
 struct App {
     exit: bool,
     color_gird: ColorBox,
+    game_board: Board,
 }
 
 impl App {
@@ -53,12 +54,30 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
+            KeyCode::Char('n') => {
+                self.game_board.next_move();
+                self.update_color_box();
+            }
             _ => {}
         }
     }
 
     fn exit(&mut self) {
         self.exit = true;
+    }
+
+    fn update_color_box(&mut self) {
+        self.color_gird = self.game_board.blocks.clone();
+    }
+
+    fn get_border_lines<'a>(&self) -> Vec<Line<'a>> {
+        let mut line_box: Vec<Line<'_>> = Vec::new();
+        line_box.push(Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"));
+        let mut inner_box = get_inner_box_lines(self.game_board.blocks);
+        line_box.append(&mut inner_box);
+        line_box.push(Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"));
+
+        return line_box;
     }
 }
 
@@ -72,7 +91,7 @@ impl Widget for &App {
         game_vec.append(&mut get_vertical_padding_lines(1));
         game_vec.append(&mut get_next_block());
         game_vec.append(&mut get_vertical_padding_lines(3));
-        game_vec.append(&mut get_border_lines());
+        game_vec.append(&mut self.get_border_lines());
 
         let game_ui = Text::from(game_vec);
         Paragraph::new(game_ui)
@@ -89,19 +108,6 @@ fn get_next_block<'a>() -> Vec<Line<'a>> {
 
     let placing = vec![placing_block_padding, upper, lower];
     return placing;
-}
-
-fn get_border_lines<'a>() -> Vec<Line<'a>> {
-    let mut board = board::Board::new();
-    board.place_block();
-
-    let mut line_box: Vec<Line<'_>> = Vec::new();
-    line_box.push(Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"));
-    let mut inner_box = get_inner_box_lines(board.blocks);
-    line_box.append(&mut inner_box);
-    line_box.push(Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"));
-
-    return line_box;
 }
 
 fn get_inner_box_lines<'a>(inner_box: ColorBox) -> Vec<Line<'a>> {
