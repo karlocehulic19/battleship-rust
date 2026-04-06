@@ -10,8 +10,9 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph, Widget},
 };
 
-use crate::game::board;
+use crate::{game::board, general::colors::Color};
 mod game;
+mod general;
 
 fn main() -> io::Result<()> {
     ratatui::run(|terminal| App::default().run(terminal))
@@ -92,30 +93,36 @@ fn get_border_lines<'a>() -> Vec<Line<'a>> {
 
     let mut line_box: Vec<Line<'_>> = Vec::new();
     line_box.push(Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"));
-    let mut inner_box = get_inner_box_lines(board.to_vec_strings());
+    let mut inner_box = get_inner_box_lines(board.blocks);
     line_box.append(&mut inner_box);
     line_box.push(Line::from("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"));
 
     return line_box;
 }
 
-fn get_inner_box_lines<'a>(inner_box: [String; 10]) -> Vec<Line<'a>> {
+fn get_inner_box_lines<'a>(inner_box: [[Color; 10]; 10]) -> Vec<Line<'a>> {
     let mut inner_lines: Vec<Line<'_>> = Vec::new();
 
     for i in 0..10 {
         let mut curr_line: Vec<Span<'_>> = Vec::new();
         curr_line.push(Span::from("🟩"));
-        for c in inner_box[i].chars() {
-            if c == '0' {
-                curr_line.push(Span::from("  "));
-            } else if c == '1' {
-                curr_line.push(Span::from("🟩").red());
-            } else if c == '2' {
-                curr_line.push(Span::from("🟩").blue());
-            } else if c == '3' {
-                curr_line.push(Span::from("🟩").green());
-            } else if c == '4' {
-                curr_line.push(Span::from("🟩").yellow());
+        for c in inner_box[i] {
+            match c {
+                Color::Empty => {
+                    curr_line.push(Span::from("  "));
+                }
+                Color::Green => {
+                    curr_line.push(Span::from("🟩").green());
+                }
+                Color::Red => {
+                    curr_line.push(Span::from("🟩").red());
+                }
+                Color::Yellow => {
+                    curr_line.push(Span::from("🟩").yellow());
+                }
+                Color::Blue => {
+                    curr_line.push(Span::from("🟩").blue());
+                }
             }
         }
         curr_line.push(Span::from("🟩"));

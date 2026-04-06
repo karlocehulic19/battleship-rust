@@ -1,32 +1,22 @@
+use ratatui::symbols::block;
+
+use crate::general::colors::Color;
+
 pub struct Board {
-    blocks: [[u8; 10]; 10],
+    pub blocks: [[Color; 10]; 10],
 }
 
 impl Board {
     pub fn new() -> Self {
         return Self {
-            blocks: [[0; 10]; 10],
+            blocks: [[Color::Empty; 10]; 10],
         };
     }
 
-    pub fn to_vec_strings(self) -> [String; 10] {
-        let mut strings: [String; 10] = Default::default();
-
-        for (row_i, row) in self.blocks.iter().enumerate() {
-            let mut string_row: String = "".to_string();
-            for cell in row {
-                string_row += &cell.to_string();
-            }
-            strings[row_i] = string_row;
-        }
-
-        return strings;
-    }
-
     pub fn place_block(&mut self) {
-        self.blocks[3][3] = 1;
-        self.blocks[4][3] = 2;
-        self.blocks[5][5] = 3;
-        self.blocks[6][5] = 4;
+        self.blocks[3][3] = Color::Green;
+        self.blocks[4][3] = Color::Red;
+        self.blocks[5][5] = Color::Blue;
+        self.blocks[6][5] = Color::Yellow;
     }
 }
