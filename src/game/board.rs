@@ -1,5 +1,3 @@
-use ratatui::symbols::block;
-
 use crate::general::colors::Color;
 
 pub struct Board {
