@@ -1,13 +1,16 @@
-use crate::general::colors::Color;
+use crate::general::{
+    colors::Color,
+    dimensions::{BOX_HEIGHT, BOX_WIDTH},
+};
 
 pub struct Board {
-    pub blocks: [[Color; 10]; 10],
+    pub blocks: [[Color; BOX_WIDTH]; BOX_HEIGHT],
 }
 
 impl Board {
     pub fn new() -> Self {
         return Self {
-            blocks: [[Color::Empty; 10]; 10],
+            blocks: [[Color::Empty; BOX_WIDTH]; BOX_HEIGHT],
         };
     }
 

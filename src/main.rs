@@ -10,7 +10,13 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph, Widget},
 };
 
-use crate::{game::board, general::colors::Color};
+use crate::{
+    game::board,
+    general::{
+        colors::Color,
+        dimensions::{BOX_HEIGHT, BOX_WIDTH},
+    },
+};
 mod game;
 mod general;
 
@@ -100,10 +106,10 @@ fn get_border_lines<'a>() -> Vec<Line<'a>> {
     return line_box;
 }
 
-fn get_inner_box_lines<'a>(inner_box: [[Color; 10]; 10]) -> Vec<Line<'a>> {
+fn get_inner_box_lines<'a>(inner_box: [[Color; BOX_WIDTH]; BOX_HEIGHT]) -> Vec<Line<'a>> {
     let mut inner_lines: Vec<Line<'_>> = Vec::new();
 
-    for i in 0..10 {
+    for i in 0..BOX_HEIGHT {
         let mut curr_line: Vec<Span<'_>> = Vec::new();
         curr_line.push(Span::from("🟩"));
         for c in inner_box[i] {
