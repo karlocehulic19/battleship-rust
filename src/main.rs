@@ -1,7 +1,10 @@
 use std::{
     fmt::Debug,
     io,
-    sync::{Arc, Mutex},
+    sync::{
+        Arc, Mutex,
+        mpsc::{self, Sender},
+    },
     thread,
     time::Duration,
 };
@@ -18,14 +21,21 @@ use ratatui::{
 
 use crate::{
     game::board::Board,
-    general::{colors::Color, dimensions::BOX_HEIGHT, types::ColorBox},
+    general::{
+        colors::Color,
+        dimensions::{BOX_HEIGHT, BOX_WIDTH},
+        movements::Movement,
+        types::ColorBox,
+    },
 };
 mod game;
 mod general;
 
 fn main() -> io::Result<()> {
-    let mut board = Board::new();
-    let app = Arc::new(Mutex::new(App::default()));
+    let (c_tx, c_rx) = mpsc::channel();
+
+    let mut board = Board::new(c_rx);
+    let app = Arc::new(Mutex::new(App::new(c_tx)));
     let app_for_game = Arc::clone(&app);
     thread::spawn(move || {
         board.start_game(move |new_color_box| {
@@ -38,13 +48,22 @@ fn main() -> io::Result<()> {
 
 const TICK_SPEED_MS: u64 = 16;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct App {
     exit: bool,
     color_gird: ColorBox,
+    command_sender: Sender<Movement>,
 }
 
 impl App {
+    fn new(c_tx: Sender<Movement>) -> Self {
+        Self {
+            exit: false,
+            color_gird: [[Color::Empty; BOX_WIDTH]; BOX_HEIGHT],
+            command_sender: c_tx,
+        }
+    }
+
     fn run_fn(app: Arc<Mutex<App>>, terminal: &mut DefaultTerminal) -> io::Result<()> {
         loop {
             {
@@ -80,10 +99,12 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            // KeyCode::Char('n') => {
-            //     self.game_board.next_move();
-            //     self.update_color_box();
-            // }
+            KeyCode::Char('l') => {
+                self.command_sender.send(Movement::Right).unwrap();
+            }
+            KeyCode::Char('h') => {
+                self.command_sender.send(Movement::Left).unwrap();
+            }
             _ => {}
         }
     }
