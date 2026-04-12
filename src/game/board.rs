@@ -65,17 +65,18 @@ impl Board {
         let mut col = prev_col.clone();
         match movement {
             Movement::Left => {
+                if col == 0 {
+                    return;
+                };
                 col -= 1;
             }
             Movement::Right => {
+                if col == dimensions::BOX_WIDTH - 1 {
+                    return;
+                }
                 col += 1;
             }
         }
-
-        // let is_near_border = col < 0 || col == dimensions::BOX_WIDTH;
-        // if (is_near_border) {
-        //     return;
-        // }
 
         self.curr_block = (row, col);
     }
