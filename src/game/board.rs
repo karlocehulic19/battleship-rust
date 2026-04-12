@@ -32,15 +32,20 @@ impl Board {
     pub fn start_game(&mut self, mut f: impl FnMut(ColorBox) -> ()) {
         while !self.done {
             self.next_move();
-            let second = Duration::from_millis(STARTING_SPEED_MS);
+            let big_interval = Duration::from_millis(STARTING_SPEED_MS);
             f(self.blocks);
-            sleep(second);
-            let receive = self.command_reciever.try_recv();
-            match receive {
-                Ok(next_command) => {
-                    self.move_box(next_command);
+            let interval_count = 50;
+            let small_interval = big_interval / interval_count;
+            for _ in 0..interval_count {
+                sleep(small_interval);
+                let receive = self.command_reciever.try_recv();
+                f(self.blocks);
+                match receive {
+                    Ok(next_command) => {
+                        self.move_box(next_command);
+                    }
+                    Err(_) => {}
                 }
-                Err(_) => {}
             }
         }
     }
