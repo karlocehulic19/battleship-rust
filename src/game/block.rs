@@ -1,0 +1,61 @@
+use crate::general::{
+    colors::Color,
+    dimensions::{BOX_HEIGHT, BOX_WIDTH},
+    movements::Movement,
+    types::ColorBox,
+};
+
+#[derive(Debug)]
+pub enum BlockError {
+    Grounded,
+    OutOfBounds,
+}
+
+#[derive(Debug)]
+pub struct Block {
+    row: usize,
+    col: usize,
+}
+
+impl Block {
+    pub fn new(row: usize, col: usize) -> Self {
+        Self { row: row, col: col }
+    }
+
+    pub fn move_down(&mut self, board: ColorBox) -> Result<(usize, usize), BlockError> {
+        if self.is_grounded(board) {
+            return Err(BlockError::Grounded);
+        }
+
+        self.row += 1;
+        return Ok((self.row, self.col));
+    }
+
+    pub fn move_horizontal(
+        &mut self,
+        movement: Movement,
+    ) -> Result<(usize, usize, usize), BlockError> {
+        match movement {
+            Movement::Left => {
+                if self.col == 0 {
+                    return Err(BlockError::OutOfBounds);
+                }
+                self.col -= 1;
+                return Ok((self.row, self.col, self.col + 1));
+            }
+            Movement::Right => {
+                if self.col == BOX_WIDTH - 1 {
+                    return Err(BlockError::OutOfBounds);
+                };
+                self.col += 1;
+                return Ok((self.row, self.col, self.col - 1));
+            }
+        }
+    }
+
+    // can either do this, and then have to call move down, or try to move down in the first place
+    fn is_grounded(&self, board: ColorBox) -> bool {
+        return self.row == BOX_HEIGHT - 1
+            || !matches!(board[self.row + 1][self.col], Color::Empty);
+    }
+}

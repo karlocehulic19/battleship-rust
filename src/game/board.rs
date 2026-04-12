@@ -1,4 +1,4 @@
-use std::sync::mpsc::{Receiver, TryRecvError};
+use std::sync::mpsc::Receiver;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -64,24 +64,16 @@ impl Board {
     }
 
     pub fn move_box(&mut self, movement: Movement) {
-        let (row, prev_col) = self.curr_block;
-        let mut col = prev_col.clone();
-        match movement {
-            Movement::Left => {
-                if col == 0 {
-                    return;
-                };
-                col -= 1;
-            }
-            Movement::Right => {
-                if col == dimensions::BOX_WIDTH - 1 {
-                    return;
+        match self.curr_block {
+            Some(ref mut block) => match block.move_horizontal(movement) {
+                Ok((new_r, new_c, old_c)) => {
+                    self.clean_box(new_r, old_c);
+                    self.blocks[new_r][new_c] = Color::Red;
                 }
-                col += 1;
-            }
+                Err(_) => {}
+            },
+            None => {}
         }
-
-        self.curr_block = (row, col);
     }
 
     pub fn clean_box(&mut self, row: usize, col: usize) {
