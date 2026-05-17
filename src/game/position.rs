@@ -5,6 +5,8 @@ use crate::general::{
     movements::Movement,
 };
 
+use faer::{Mat, col, mat};
+
 pub type CellPosition = (usize, usize);
 pub type CellPositions = Vec<CellPosition>;
 
@@ -84,7 +86,48 @@ impl BlockRelativePosition {
                 let new_main_cell = (main_row.clone() + 1, main_col.clone());
                 return Self::new(new_main_cell, self.offset_cells.clone());
             }
+            Movement::ClockwiseRotation => {
+                let clockwise_mat = mat![[0.0, 1.0], [-1.0, 0.0]];
+                let rotated_oddset_cells: Vec<(isize, isize)> = self
+                    .offset_cells
+                    .iter()
+                    .map(|cell| {
+                        return Self::rotate_offset(
+                            cell.0.clone() as f64,
+                            cell.1.clone() as f64,
+                            &clockwise_mat,
+                        );
+                    })
+                    .collect();
+
+                return Self::new(self.main_cell.clone(), rotated_oddset_cells.into());
+            }
+            Movement::AntiClockwiseRotation => {
+                let anticlockwise_mat = mat![[0.0, -1.0], [1.0, 0.0]];
+                let rotated_oddset_cells: Vec<(isize, isize)> = self
+                    .offset_cells
+                    .iter()
+                    .map(|cell| {
+                        return Self::rotate_offset(
+                            cell.0.clone() as f64,
+                            cell.1.clone() as f64,
+                            &anticlockwise_mat,
+                        );
+                    })
+                    .collect();
+
+                return Self::new(self.main_cell.clone(), rotated_oddset_cells.into());
+            }
         }
+    }
+
+    fn rotate_offset(o_row: f64, o_col: f64, rotation_matrix: &Mat<f64>) -> (isize, isize) {
+        let offset_vec = col![o_row, o_col];
+        let rotated_offset_vec = rotation_matrix * &offset_vec;
+        return (
+            rotated_offset_vec[0] as isize,
+            rotated_offset_vec[1] as isize,
+        );
     }
 }
 

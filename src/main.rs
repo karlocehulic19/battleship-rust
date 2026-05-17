@@ -102,7 +102,7 @@ impl App {
 
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
-            KeyCode::Char('q') => self.exit(),
+            KeyCode::Char('x') => self.exit(),
             KeyCode::Char('d') => {
                 self.command_sender
                     .send(Command::Move(Movement::Right))
@@ -116,6 +116,16 @@ impl App {
             KeyCode::Char('s') => {
                 self.command_sender
                     .send(Command::Move(Movement::Down))
+                    .unwrap();
+            }
+            KeyCode::Char('e') => {
+                self.command_sender
+                    .send(Command::Move(Movement::ClockwiseRotation))
+                    .unwrap();
+            }
+            KeyCode::Char('q') => {
+                self.command_sender
+                    .send(Command::Move(Movement::AntiClockwiseRotation))
                     .unwrap();
             }
             _ => {}
