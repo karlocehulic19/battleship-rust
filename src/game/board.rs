@@ -2,8 +2,6 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::thread::sleep;
 use std::time::Duration;
 
-use rand::rand_core::block;
-
 use crate::ColorBox;
 use crate::game::block::Block;
 use crate::game::block_type::BlockTypeRandomizer;
