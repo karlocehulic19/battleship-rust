@@ -6,4 +6,7 @@ pub enum Color {
     Blue,
     Yellow,
     Red,
+    Pink,
+    Orange,
+    Purple,
 }

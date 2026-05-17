@@ -2,6 +2,8 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::thread::sleep;
 use std::time::Duration;
 
+use rand::rand_core::block;
+
 use crate::ColorBox;
 use crate::game::block::Block;
 use crate::game::block_type::BlockTypeRandomizer;
@@ -64,41 +66,38 @@ impl Board {
 
     fn next_move(&mut self) {
         // TODO: handle unwrap properly (This will be the error that causes game to end)
-        let should_create_new_block = self.curr_block.is_none()
-            || self
-                .curr_block
-                .as_mut()
-                .unwrap()
-                .move_block(Movement::Down, self.blocks)
-                .is_err();
-        if should_create_new_block {
-            self.curr_block = Some(
-                Block::new(self.blocks, BlockTypeRandomizer::get_random_block_type()).unwrap(),
-            );
-        }
-
-        let (prev_cells, next_cells) = match self.curr_block.as_ref() {
-            Some(block) => (
-                block.get_prev_block_cells().clone(),
-                block.get_block_cells(),
-            ),
+        let block_obj: Block;
+        match self.curr_block.take() {
             None => {
-                return;
+                block_obj =
+                    Block::new(self.blocks, BlockTypeRandomizer::get_random_block_type()).unwrap();
+            }
+            Some(mut some_block) => {
+                if some_block.move_block(Movement::Down, self.blocks).is_err() {
+                    block_obj =
+                        Block::new(self.blocks, BlockTypeRandomizer::get_random_block_type())
+                            .unwrap();
+                } else {
+                    block_obj = some_block;
+                }
             }
         };
-        if let Some(ref prev_cells) = prev_cells {
+
+        if let Some(ref prev_cells) = block_obj.get_prev_block_cells() {
             self.clean_box(prev_cells);
         }
-        self.update_board(&next_cells, Color::Red);
+        self.update_board(&block_obj.get_block_cells(), block_obj.get_color());
+        self.curr_block = Some(block_obj);
     }
 
     fn move_box(&mut self, movement: Movement) {
         if let Some(ref mut block) = self.curr_block {
             if let Ok(new_pos) = block.move_block(movement, self.blocks) {
+                let color = block.get_color();
                 if let Some(prev_cells) = block.get_prev_block_cells() {
                     self.clean_box(&prev_cells);
                 }
-                self.update_board(&new_pos, Color::Red);
+                self.update_board(&new_pos, color);
             }
         }
     }

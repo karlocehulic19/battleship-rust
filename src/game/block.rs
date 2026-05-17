@@ -23,6 +23,7 @@ impl From<PositionError> for BlockError {
 pub struct Block {
     position: BlockRelativePosition,
     prev_position: Option<BlockRelativePosition>,
+    color: Color,
 }
 
 impl Block {
@@ -38,6 +39,7 @@ impl Block {
         Ok(Self {
             position,
             prev_position: None,
+            color: block_type.get_color(),
         })
     }
 
@@ -113,5 +115,9 @@ impl Block {
 
     pub fn get_block_cells(&self) -> CellPositions {
         return self.position.clone().into();
+    }
+
+    pub fn get_color(&self) -> Color {
+        return self.color;
     }
 }

@@ -199,10 +199,19 @@ fn get_inner_box_lines<'a>(inner_box: ColorBox) -> Vec<Line<'a>> {
                     curr_line.push(Span::from("🟩").red());
                 }
                 Color::Yellow => {
-                    curr_line.push(Span::from("🟩").yellow());
+                    curr_line.push(Span::from("🟩").light_yellow());
                 }
                 Color::Blue => {
                     curr_line.push(Span::from("🟩").blue());
+                }
+                Color::Pink => {
+                    curr_line.push(Span::from("🟩").light_magenta());
+                }
+                Color::Orange => {
+                    curr_line.push(Span::from("🟩").yellow());
+                }
+                Color::Purple => {
+                    curr_line.push(Span::from("🟩").magenta());
                 }
             }
         }
