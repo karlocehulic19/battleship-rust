@@ -1,5 +1,8 @@
 use crate::{
-    game::position::{BlockRelativePosition, CellPositions, PositionError},
+    game::{
+        block_type::BlockType,
+        position::{BlockRelativePosition, CellPositions, PositionError},
+    },
     general::{colors::Color, constants::BOX_HEIGHT, movements::Movement, types::ColorBox},
 };
 
@@ -23,11 +26,10 @@ pub struct Block {
 }
 
 impl Block {
-    pub fn new(board: ColorBox) -> Result<Self, BlockError> {
-        // Hardcoded for L block for now..., will discover better approaches later...
-        let main_cell_row: usize = 0;
-        let main_cell_col: usize = 3;
-        let offset_cells: Vec<(isize, isize)> = vec![(1, 0), (1, 1), (1, 2)];
+    pub fn new(board: ColorBox, block_type: Box<dyn BlockType>) -> Result<Self, BlockError> {
+        let main_cell_row: usize = 1;
+        let main_cell_col: usize = 4;
+        let offset_cells: Vec<(isize, isize)> = block_type.get_offset_position();
         // TODO:  handle position checking correctly
         let position =
             BlockRelativePosition::new((main_cell_row, main_cell_col), offset_cells).unwrap();

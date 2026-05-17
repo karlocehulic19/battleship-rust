@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use crate::ColorBox;
 use crate::game::block::Block;
+use crate::game::block_type::BlockTypeRandomizer;
 use crate::general::commands::Command;
 use crate::general::{
     colors::Color,
@@ -71,7 +72,9 @@ impl Board {
                 .move_block(Movement::Down, self.blocks)
                 .is_err();
         if should_create_new_block {
-            self.curr_block = Some(Block::new(self.blocks).unwrap());
+            self.curr_block = Some(
+                Block::new(self.blocks, BlockTypeRandomizer::get_random_block_type()).unwrap(),
+            );
         }
 
         let (prev_cells, next_cells) = match self.curr_block.as_ref() {
