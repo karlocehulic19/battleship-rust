@@ -57,7 +57,7 @@ impl Board {
                 self.done = true;
             }
             Command::Move(movement) => {
-                self.move_box(movement);
+                self.move_block(movement);
             }
         }
     }
@@ -82,25 +82,25 @@ impl Board {
         };
 
         if let Some(ref prev_cells) = block_obj.get_prev_block_cells() {
-            self.clean_box(prev_cells);
+            self.clean_board(prev_cells);
         }
         self.update_board(&block_obj.get_block_cells(), block_obj.get_color());
         self.curr_block = Some(block_obj);
     }
 
-    fn move_box(&mut self, movement: Movement) {
+    fn move_block(&mut self, movement: Movement) {
         if let Some(ref mut block) = self.curr_block {
             if let Ok(new_pos) = block.move_block(movement, self.blocks) {
                 let color = block.get_color();
                 if let Some(prev_cells) = block.get_prev_block_cells() {
-                    self.clean_box(&prev_cells);
+                    self.clean_board(&prev_cells);
                 }
                 self.update_board(&new_pos, color);
             }
         }
     }
 
-    fn clean_box(&mut self, cells: &Vec<(usize, usize)>) -> &mut Board {
+    fn clean_board(&mut self, cells: &Vec<(usize, usize)>) -> &mut Board {
         for (row, col) in cells {
             self.blocks[row.clone()][col.clone()] = Color::Empty;
         }
