@@ -101,7 +101,10 @@ impl Board {
     }
 
     fn clean_box(&mut self, cells: &Vec<(usize, usize)>) -> &mut Board {
-        self.update_board(cells, Color::Empty);
+        for (row, col) in cells {
+            self.blocks[row.clone()][col.clone()] = Color::Empty;
+        }
+
         return self;
     }
 
